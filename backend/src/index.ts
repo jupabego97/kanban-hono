@@ -30,7 +30,7 @@ app.use(
       return allowed.includes(origin ?? '') ? origin : allowed[0]
     },
     allowMethods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'Authorization'],
+    allowHeaders: ['Content-Type', 'Authorization', 'Cache-Control'],
     maxAge: 600,
   })
 )

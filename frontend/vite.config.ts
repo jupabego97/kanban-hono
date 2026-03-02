@@ -47,11 +47,14 @@ export default defineConfig({
       workbox: {
         // Precachea todos los assets estáticos del build
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-        // No cachear el stream SSE
+        // Excluir /api de navegación fallback
         navigateFallbackDenylist: [/^\/api/],
         runtimeCaching: [
           {
-            urlPattern: /^https?:\/\/.*\/api\/.*/i,
+            // Cachear API pero NO el endpoint SSE (text/event-stream no es cacheable)
+            urlPattern: ({ url }: { url: URL }) =>
+              url.pathname.startsWith('/api/') &&
+              !url.pathname.endsWith('/stream'),
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',

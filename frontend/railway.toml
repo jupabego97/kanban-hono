@@ -3,7 +3,7 @@
 # ============================================================
 [build]
 builder      = "NIXPACKS"
-buildCommand = "npm ci && npm run build"
+# buildCommand lo maneja nixpacks.toml para evitar doble npm ci (EBUSY)
 
 [deploy]
 # `serve` con -s maneja el routing SPA (redirige todo a index.html)

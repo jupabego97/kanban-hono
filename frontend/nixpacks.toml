@@ -1,5 +1,9 @@
-# Nixpacks — Node.js para el frontend
+# Nixpacks — Node.js 20 para el frontend
+# @tailwindcss/oxide y workbox-build requieren Node >= 20
 providers = ["node"]
+
+[phases.setup]
+nixPkgs = ["nodejs_20"]
 
 [phases.install]
 cmds = ["npm ci"]
@@ -8,6 +12,4 @@ cmds = ["npm ci"]
 cmds = ["npm run build"]
 
 [start]
-# `serve` sirve la SPA con soporte de rutas (flag -s)
-# Railway inyecta $PORT automáticamente
 cmd = "npx serve dist -s -l $PORT"

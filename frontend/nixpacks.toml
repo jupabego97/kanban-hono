@@ -1,0 +1,13 @@
+# Nixpacks — Node.js para el frontend
+providers = ["node"]
+
+[phases.install]
+cmds = ["npm ci"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[start]
+# `serve` sirve la SPA con soporte de rutas (flag -s)
+# Railway inyecta $PORT automáticamente
+cmd = "npx serve dist -s -l $PORT"

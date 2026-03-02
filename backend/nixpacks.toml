@@ -1,0 +1,8 @@
+# Nixpacks — le dice a Railway que este servicio usa Bun
+providers = ["bun"]
+
+[phases.install]
+cmds = ["bun install --frozen-lockfile"]
+
+[start]
+cmd = "bun src/index.ts"

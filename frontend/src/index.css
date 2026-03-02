@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+/* Tailwind v4: sin tailwind.config.js — toda la config va aquí con @theme */
+@theme {
+  --color-slate-950: #020617;
+
+  /* Colores de estado del kanban */
+  --color-estado-solicitudes: #3b82f6;
+  --color-estado-analisis:    #f59e0b;
+  --color-estado-por-pedir:   #8b5cf6;
+  --color-estado-en-camino:   #06b6d4;
+  --color-estado-recibido:    #22c55e;
+
+  /* Tipografía del sistema — sin Google Fonts, carga instantánea */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+               "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo,
+               Consolas, "DejaVu Sans Mono", monospace;
+}
+
+/* Reset base */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-tap-highlight-color: transparent;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #0f172a;
+  color: #e2e8f0;
+  font-family: var(--font-sans);
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+/* Scrollbar personalizada para el kanban horizontal */
+.kanban-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #334155 transparent;
+}
+.kanban-scroll::-webkit-scrollbar { height: 6px; }
+.kanban-scroll::-webkit-scrollbar-track { background: transparent; }
+.kanban-scroll::-webkit-scrollbar-thumb {
+  background-color: #334155;
+  border-radius: 3px;
+}
+
+/* Animación de entrada para tarjetas nuevas */
+@keyframes slide-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.card-enter { animation: slide-in 200ms ease-out; }
+
+/* Overlay drag & drop */
+.dnd-overlay {
+  opacity: 0.85;
+  transform: rotate(2deg) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}

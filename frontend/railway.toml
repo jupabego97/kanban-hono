@@ -1,0 +1,23 @@
+# ============================================================
+# Railway — Servicio Frontend (Vite SPA estática)
+# ============================================================
+[build]
+builder      = "NIXPACKS"
+buildCommand = "npm ci && npm run build"
+
+[deploy]
+# `serve` con -s maneja el routing SPA (redirige todo a index.html)
+startCommand = "npx serve dist -s -l $PORT"
+
+healthcheckPath    = "/"
+healthcheckTimeout = 60
+
+restartPolicyType       = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+
+# ── Variable de entorno de build ───────────────────────────
+# Agregar en el dashboard de Railway → Variables:
+#
+#   VITE_API_URL = https://tu-backend.railway.app
+#
+# (Sin barra final. Vite la embebe en el bundle en tiempo de build)

@@ -1,27 +1,20 @@
 # ============================================================
 # Railway — Servicio Backend (Hono + Bun)
+# Usa Dockerfile en vez de Nixpacks para garantizar Bun nativo
 # ============================================================
 [build]
-builder      = "NIXPACKS"
-buildCommand = "bun install --frozen-lockfile"
+builder        = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "bun src/index.ts"
-
-# Railway inyecta $PORT automáticamente; Hono lo lee en src/index.ts
-# Railway inyecta $DATABASE_URL desde el plugin de PostgreSQL
-
-# Health check: Railway reinicia el contenedor si /health falla
+# El CMD del Dockerfile arranca el servidor
 healthcheckPath    = "/health"
-healthcheckTimeout = 300          # segundos de espera por respuesta
+healthcheckTimeout = 300
 
-# Política de reinicio ante fallos inesperados
 restartPolicyType       = "ON_FAILURE"
 restartPolicyMaxRetries = 3
 
-# ── Variables de entorno de producción ─────────────────────
-# (DATABASE_URL se inyecta automáticamente por el plugin PostgreSQL)
-# Agrega el resto en el dashboard de Railway → Variables:
-#
+# Variables a agregar en el dashboard de Railway:
 #   NODE_ENV     = production
 #   FRONTEND_URL = https://tu-frontend.railway.app
+# DATABASE_URL se inyecta automáticamente desde el plugin PostgreSQL

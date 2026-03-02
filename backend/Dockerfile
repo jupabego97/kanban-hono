@@ -1,12 +1,12 @@
 # ============================================================
 # Imagen oficial de Bun — Railway la detecta automáticamente
 # ============================================================
-FROM oven/bun:1.1-alpine AS base
+FROM oven/bun:latest AS base
 WORKDIR /app
 
-# Instalar dependencias (bun.lock garantiza versiones reproducibles)
+# Instalar dependencias
 COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile
+RUN bun install
 
 # Copiar código fuente
 COPY src/       ./src/

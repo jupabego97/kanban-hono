@@ -3,9 +3,14 @@ import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import { secureHeaders } from 'hono/secure-headers'
 import { clientCount } from './sse.ts'
+import { runMigrations } from './migrate.ts'
 import solicitudesRouter from './routes/solicitudes.ts'
 import proveedoresRouter from './routes/proveedores.ts'
 import catalogoRouter   from './routes/catalogo.ts'
+
+// Ejecutar migraciones antes de arrancar el servidor
+// Crea tablas + seed data si la BD está vacía
+await runMigrations()
 
 const app = new Hono()
 

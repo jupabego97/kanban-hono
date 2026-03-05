@@ -29,7 +29,7 @@ export function KanbanColumn({ estado, cards, onEdit, onDelete, filterSlot }: Ka
       {/* ── Header de columna ──────────────────────────── */}
       <div
         className={`flex items-center justify-between px-3 py-2.5 rounded-t-xl
-                    border-t-2 bg-slate-900 border-b border-b-slate-800
+                    border-t-2 bg-white dark:bg-slate-900 border-b border-b-slate-200 dark:border-b-slate-800
                     ${colors.border}`}
       >
         <div className="flex items-center gap-2 min-w-0">
@@ -48,7 +48,7 @@ export function KanbanColumn({ estado, cards, onEdit, onDelete, filterSlot }: Ka
 
       {/* Filtro (solo "por_pedir") */}
       {filterSlot && (
-        <div className="bg-slate-900 border-b border-slate-800 px-3 py-2">
+        <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3 py-2">
           {filterSlot}
         </div>
       )}
@@ -61,7 +61,7 @@ export function KanbanColumn({ estado, cards, onEdit, onDelete, filterSlot }: Ka
                     ${colors.border.replace('border', 'border')}
                     ${isOver
                       ? `${colors.bg} border-opacity-60`
-                      : 'bg-slate-900/50 border-slate-800'
+                      : 'bg-slate-100/60 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800'
                     }`}
       >
         <SortableContext items={cardIds} strategy={verticalListSortingStrategy}>
@@ -83,7 +83,7 @@ export function KanbanColumn({ estado, cards, onEdit, onDelete, filterSlot }: Ka
                         transition-colors duration-150
                         ${isOver
                           ? `${colors.border} ${colors.text} opacity-60`
-                          : 'border-slate-800 text-slate-700'
+                          : 'border-slate-300 dark:border-slate-800 text-slate-400 dark:text-slate-700'
                         }`}
           >
             {isOver ? 'Soltar aquí' : 'Sin tarjetas'}

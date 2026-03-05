@@ -26,6 +26,7 @@ const INITIAL_FORM: FormState = {
 
 export function FormMostrador() {
   const createSolicitud = useKanbanStore((s) => s.createSolicitud)
+  const proveedores     = useKanbanStore((s) => s.proveedores)
 
   const [form, setForm]         = useState<FormState>(INITIAL_FORM)
   const [submitting, setSubmitting] = useState(false)
@@ -33,20 +34,45 @@ export function FormMostrador() {
   const [successMsg, setSuccessMsg]   = useState<string | null>(null)
   const [showExtra, setShowExtra]     = useState(false)
 
+  // ── Estado del combobox de proveedor ───────────────────────
+  const [provQuery, setProvQuery]   = useState('')
+  const [provOpen, setProvOpen]     = useState(false)
+  const provContainerRef = useRef<HTMLDivElement>(null)
+
   const inputRef    = useRef<HTMLInputElement>(null)
   const successTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const baseId = useId()
 
-  // ── Autocompletado ─────────────────────────────────────────
+  // ── Autocompletado de producto ─────────────────────────────
   const handleSelectProducto = useCallback((item: ProductoCatalogo) => {
-    setForm((prev) => ({
-      ...prev,
-      proveedorId: item.proveedorId,
-    }))
-  }, [])
+    const prov = proveedores.find((p) => p.id === item.proveedorId)
+    setForm((prev) => ({ ...prev, proveedorId: item.proveedorId }))
+    setProvQuery(prov ? prov.nombre : '')
+  }, [proveedores])
 
   const ac = useAutocomplete(handleSelectProducto)
+
+  // ── Proveedor combobox helpers ─────────────────────────────
+  const provFiltered = provQuery.trim()
+    ? proveedores.filter((p) =>
+        p.nombre.toLowerCase().includes(provQuery.trim().toLowerCase())
+      )
+    : proveedores
+
+  const handleProvSelect = (id: number, nombre: string) => {
+    setForm((prev) => ({ ...prev, proveedorId: id }))
+    setProvQuery(nombre)
+    setProvOpen(false)
+  }
+
+  const handleProvChange = (val: string) => {
+    setProvQuery(val)
+    setProvOpen(true)
+    if (!val.trim()) {
+      setForm((prev) => ({ ...prev, proveedorId: null }))
+    }
+  }
 
   // ── Submit ─────────────────────────────────────────────────
   const handleSubmit = useCallback(
@@ -80,6 +106,7 @@ export function FormMostrador() {
         // Reset del formulario — conserva el tipo seleccionado
         ac.clear()
         setForm((prev) => ({ ...INITIAL_FORM, tipo: prev.tipo }))
+        setProvQuery('')
         setShowExtra(false)
 
         // Re-foco inmediato para siguiente registro
@@ -98,13 +125,13 @@ export function FormMostrador() {
 
   // ── Render ─────────────────────────────────────────────────
   return (
-    <div className="flex flex-col items-center px-4 py-6 min-h-[calc(100dvh-57px)] bg-slate-950">
+    <div className="flex flex-col items-center px-4 py-6 min-h-[calc(100dvh-57px)] bg-slate-50 dark:bg-slate-950">
       <div className="w-full max-w-md">
 
         {/* Título */}
         <div className="mb-6">
-          <h2 className="text-xl font-semibold text-slate-100">Registrar faltante</h2>
-          <p className="text-slate-500 text-sm mt-1">
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Registrar faltante</h2>
+          <p className="text-slate-500 dark:text-slate-500 text-sm mt-1">
             Completa los campos y pulsa Registrar
           </p>
         </div>
@@ -113,7 +140,7 @@ export function FormMostrador() {
 
           {/* ── Campo: Tipo ─────────────────────────────────── */}
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wide">
+            <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide">
               Tipo de faltante
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -121,13 +148,16 @@ export function FormMostrador() {
                 <button
                   key={t}
                   type="button"
-                  onClick={() => set('tipo', t)}
+                  onClick={() => {
+                    set('tipo', t)
+                    if (t === 'Agotado') set('contactoCliente', '')
+                  }}
                   className={`py-3 rounded-xl font-semibold text-sm transition-all ${
                     form.tipo === t
                       ? t === 'Agotado'
                         ? 'bg-red-600 text-white shadow-lg shadow-red-900/30'
                         : 'bg-blue-600 text-white shadow-lg shadow-blue-900/30'
-                      : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
                   }`}
                 >
                   {t === 'Agotado' ? '⚠ Agotado' : '✦ Nuevo'}
@@ -140,7 +170,7 @@ export function FormMostrador() {
           <div ref={ac.containerRef} className="relative">
             <label
               htmlFor={`${baseId}-producto`}
-              className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wide"
+              className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide"
             >
               Producto
             </label>
@@ -153,8 +183,8 @@ export function FormMostrador() {
                 autoCorrect="off"
                 spellCheck={false}
                 // font-size 16px evita el zoom automático en iOS
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5
-                           text-slate-100 text-[16px] placeholder:text-slate-500
+                className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3.5
+                           text-slate-900 dark:text-slate-100 text-[16px] placeholder:text-slate-400 dark:placeholder:text-slate-500
                            focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
                            transition-shadow pr-10"
                 placeholder="Buscar o escribir producto..."
@@ -173,8 +203,8 @@ export function FormMostrador() {
                 <button
                   type="button"
                   onClick={() => { ac.clear(); inputRef.current?.focus() }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500
-                             hover:text-slate-300 transition-colors p-1"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500
+                             hover:text-slate-600 dark:hover:text-slate-300 transition-colors p-1"
                   aria-label="Limpiar"
                 >
                   ✕
@@ -187,8 +217,8 @@ export function FormMostrador() {
               <ul
                 id={`${baseId}-dropdown`}
                 role="listbox"
-                className="absolute z-50 w-full mt-1.5 bg-slate-800 border border-slate-700
-                           rounded-xl shadow-2xl shadow-black/50 overflow-hidden
+                className="absolute z-50 w-full mt-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700
+                           rounded-xl shadow-2xl shadow-black/20 dark:shadow-black/50 overflow-hidden
                            max-h-56 overflow-y-auto"
               >
                 {ac.results.map((item, idx) => (
@@ -200,16 +230,85 @@ export function FormMostrador() {
                     className={`flex items-center justify-between px-4 py-3 cursor-pointer
                                 text-sm transition-colors select-none
                                 ${idx === ac.activeIndex
-                                  ? 'bg-blue-600/30 text-blue-200'
-                                  : 'text-slate-200 hover:bg-slate-700'
+                                  ? 'bg-blue-600/20 dark:bg-blue-600/30 text-blue-700 dark:text-blue-200'
+                                  : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'
                                 }`}
                   >
                     <span className="truncate">{item.nombre}</span>
                     {item.proveedorNombre && (
-                      <span className="ml-3 text-xs text-slate-500 shrink-0 truncate max-w-[120px]">
+                      <span className="ml-3 text-xs text-slate-400 dark:text-slate-500 shrink-0 truncate max-w-[120px]">
                         {item.proveedorNombre}
                       </span>
                     )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          {/* ── Campo: Proveedor (combobox) ──────────────────── */}
+          <div ref={provContainerRef} className="relative">
+            <label
+              htmlFor={`${baseId}-proveedor`}
+              className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide"
+            >
+              Proveedor
+              <span className="ml-1.5 text-slate-400 dark:text-slate-600 normal-case font-normal">(opcional)</span>
+            </label>
+            <div className="relative">
+              <input
+                id={`${baseId}-proveedor`}
+                type="text"
+                autoComplete="off"
+                placeholder="Buscar proveedor..."
+                value={provQuery}
+                onChange={(e) => handleProvChange(e.target.value)}
+                onFocus={() => setProvOpen(true)}
+                onBlur={() => setTimeout(() => setProvOpen(false), 150)}
+                disabled={submitting}
+                className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3.5
+                           text-slate-900 dark:text-slate-100 text-[16px] placeholder:text-slate-400 dark:placeholder:text-slate-500
+                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                           transition-shadow pr-10"
+              />
+              {provQuery && (
+                <button
+                  type="button"
+                  onMouseDown={(e) => { e.preventDefault(); setProvQuery(''); setForm((prev) => ({ ...prev, proveedorId: null })); setProvOpen(false) }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500
+                             hover:text-slate-600 dark:hover:text-slate-300 transition-colors p-1"
+                  aria-label="Limpiar proveedor"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+
+            {/* Dropdown de proveedores */}
+            {provOpen && provFiltered.length > 0 && (
+              <ul
+                role="listbox"
+                className="absolute z-50 w-full mt-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700
+                           rounded-xl shadow-2xl shadow-black/20 dark:shadow-black/50 overflow-hidden
+                           max-h-48 overflow-y-auto"
+              >
+                {provFiltered.map((p) => (
+                  <li
+                    key={p.id}
+                    role="option"
+                    aria-selected={form.proveedorId === p.id}
+                    onMouseDown={(e) => { e.preventDefault(); handleProvSelect(p.id, p.nombre) }}
+                    className={`flex items-center justify-between px-4 py-3 cursor-pointer
+                                text-sm transition-colors select-none
+                                ${form.proveedorId === p.id
+                                  ? 'bg-blue-600/20 dark:bg-blue-600/30 text-blue-700 dark:text-blue-200'
+                                  : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'
+                                }`}
+                  >
+                    <span className="truncate">{p.nombre}</span>
+                    <span className="ml-3 text-xs text-slate-400 dark:text-slate-500 shrink-0">
+                      {p.diasEntrega}d
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -220,7 +319,7 @@ export function FormMostrador() {
           <div>
             <label
               htmlFor={`${baseId}-cantidad`}
-              className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wide"
+              className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide"
             >
               Cantidad
             </label>
@@ -228,8 +327,8 @@ export function FormMostrador() {
               <button
                 type="button"
                 onClick={() => set('cantidadPedida', Math.max(1, form.cantidadPedida - 1))}
-                className="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700
-                           text-slate-300 text-xl font-bold hover:bg-slate-700
+                className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700
+                           text-slate-600 dark:text-slate-300 text-xl font-bold hover:bg-slate-200 dark:hover:bg-slate-700
                            active:scale-95 transition-all flex items-center justify-center"
                 aria-label="Reducir cantidad"
               >
@@ -242,15 +341,15 @@ export function FormMostrador() {
                 max="9999"
                 value={form.cantidadPedida}
                 onChange={(e) => set('cantidadPedida', Math.max(1, Number(e.target.value) || 1))}
-                className="flex-1 bg-slate-800 border border-slate-700 rounded-xl
-                           text-center text-[16px] font-bold text-slate-100 py-3
+                className="flex-1 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl
+                           text-center text-[16px] font-bold text-slate-900 dark:text-slate-100 py-3
                            focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <button
                 type="button"
                 onClick={() => set('cantidadPedida', form.cantidadPedida + 1)}
-                className="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700
-                           text-slate-300 text-xl font-bold hover:bg-slate-700
+                className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700
+                           text-slate-600 dark:text-slate-300 text-xl font-bold hover:bg-slate-200 dark:hover:bg-slate-700
                            active:scale-95 transition-all flex items-center justify-center"
                 aria-label="Aumentar cantidad"
               >
@@ -259,36 +358,38 @@ export function FormMostrador() {
             </div>
           </div>
 
-          {/* ── Campo: Contacto cliente ──────────────────────── */}
-          <div>
-            <label
-              htmlFor={`${baseId}-contacto`}
-              className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wide"
-            >
-              Contacto del cliente
-              <span className="ml-1.5 text-slate-600 normal-case font-normal">(opcional)</span>
-            </label>
-            <input
-              id={`${baseId}-contacto`}
-              type="tel"
-              inputMode="tel"
-              autoComplete="tel"
-              placeholder="Número de WhatsApp o nombre"
-              value={form.contactoCliente}
-              onChange={(e) => set('contactoCliente', e.target.value)}
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5
-                         text-slate-100 text-[16px] placeholder:text-slate-500
-                         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                         transition-shadow"
-              disabled={submitting}
-            />
-          </div>
+          {/* ── Campo: Contacto cliente (solo si tipo = Nuevo) ── */}
+          {form.tipo === 'Nuevo' && (
+            <div>
+              <label
+                htmlFor={`${baseId}-contacto`}
+                className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide"
+              >
+                Contacto del cliente
+                <span className="ml-1.5 text-slate-400 dark:text-slate-600 normal-case font-normal">(opcional)</span>
+              </label>
+              <input
+                id={`${baseId}-contacto`}
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                placeholder="Número de WhatsApp o nombre"
+                value={form.contactoCliente}
+                onChange={(e) => set('contactoCliente', e.target.value)}
+                className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3.5
+                           text-slate-900 dark:text-slate-100 text-[16px] placeholder:text-slate-400 dark:placeholder:text-slate-500
+                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                           transition-shadow"
+                disabled={submitting}
+              />
+            </div>
+          )}
 
           {/* ── Campos extra (colapsables) ───────────────────── */}
           <button
             type="button"
             onClick={() => setShowExtra((v) => !v)}
-            className="flex items-center gap-2 text-xs text-slate-500 hover:text-slate-300
+            className="flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300
                        transition-colors self-start"
           >
             <span
@@ -305,7 +406,7 @@ export function FormMostrador() {
               <div>
                 <label
                   htmlFor={`${baseId}-notas`}
-                  className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wide"
+                  className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide"
                 >
                   Notas internas
                 </label>
@@ -315,8 +416,8 @@ export function FormMostrador() {
                   placeholder="Talla, color, referencia, urgencia..."
                   value={form.notas}
                   onChange={(e) => set('notas', e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3
-                             text-slate-100 text-[16px] placeholder:text-slate-500 resize-none
+                  className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3
+                             text-slate-900 dark:text-slate-100 text-[16px] placeholder:text-slate-400 dark:placeholder:text-slate-500 resize-none
                              focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   disabled={submitting}
                 />
@@ -326,7 +427,7 @@ export function FormMostrador() {
 
           {/* ── Error de validación ──────────────────────────── */}
           {submitError && (
-            <p className="text-red-400 text-sm bg-red-500/10 border border-red-500/30
+            <p className="text-red-600 dark:text-red-400 text-sm bg-red-500/10 border border-red-500/30
                           rounded-lg px-4 py-3">
               {submitError}
             </p>
@@ -358,10 +459,10 @@ export function FormMostrador() {
         {successMsg && (
           <div
             className="mt-4 flex items-center gap-3 px-4 py-3.5 rounded-xl
-                       bg-green-500/10 border border-green-500/30 text-green-400
+                       bg-green-500/10 border border-green-500/30 text-green-700 dark:text-green-400
                        text-sm card-enter"
           >
-            <span className="text-green-400 text-lg">✓</span>
+            <span className="text-lg">✓</span>
             <span className="flex-1">{successMsg}</span>
           </div>
         )}
@@ -387,7 +488,7 @@ function RecienRegistradas() {
 
   return (
     <div className="mt-8">
-      <h3 className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-3">
+      <h3 className="text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wide mb-3">
         Registradas hoy
       </h3>
       <ul className="flex flex-col gap-2">
@@ -395,21 +496,21 @@ function RecienRegistradas() {
           <li
             key={s.id}
             className="flex items-center justify-between px-4 py-3
-                       bg-slate-900 border border-slate-800 rounded-xl"
+                       bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl"
           >
             <div className="flex items-center gap-3 min-w-0">
               <span
                 className={`shrink-0 px-2 py-0.5 rounded-full text-xs font-semibold ${
                   s.tipo === 'Agotado'
-                    ? 'bg-red-500/20 text-red-400'
-                    : 'bg-blue-500/20 text-blue-400'
+                    ? 'bg-red-500/20 text-red-600 dark:text-red-400'
+                    : 'bg-blue-500/20 text-blue-600 dark:text-blue-400'
                 }`}
               >
                 {s.tipo}
               </span>
-              <span className="text-slate-300 text-sm truncate">{s.productoNombre}</span>
+              <span className="text-slate-700 dark:text-slate-300 text-sm truncate">{s.productoNombre}</span>
             </div>
-            <span className="text-slate-500 text-sm font-mono ml-3 shrink-0">
+            <span className="text-slate-400 dark:text-slate-500 text-sm font-mono ml-3 shrink-0">
               ×{s.cantidadPedida}
             </span>
           </li>

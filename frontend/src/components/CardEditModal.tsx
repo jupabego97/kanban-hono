@@ -80,11 +80,15 @@ export function CardEditModal({ solicitud, onClose }: CardEditModalProps) {
 
   if (!solicitud) return null
 
+  const inputClass = `w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3
+                      text-slate-900 dark:text-slate-100 text-[16px] focus:outline-none focus:ring-2
+                      focus:ring-blue-500 focus:border-transparent`
+
   return (
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+        className="fixed inset-0 z-40 bg-black/40 dark:bg-black/60 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -98,18 +102,18 @@ export function CardEditModal({ solicitud, onClose }: CardEditModalProps) {
                    pointer-events-none"
       >
         <div
-          className="pointer-events-auto w-full sm:max-w-lg bg-slate-900 border border-slate-800
-                     rounded-t-2xl sm:rounded-2xl shadow-2xl shadow-black/50 flex flex-col
+          className="pointer-events-auto w-full sm:max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800
+                     rounded-t-2xl sm:rounded-2xl shadow-2xl shadow-black/20 dark:shadow-black/50 flex flex-col
                      max-h-[90dvh] overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800 shrink-0">
-            <h2 className="text-base font-semibold text-slate-100">Editar solicitud</h2>
+          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-800 shrink-0">
+            <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Editar solicitud</h2>
             <button
               onClick={onClose}
               className="w-8 h-8 flex items-center justify-center rounded-lg
-                         text-slate-500 hover:text-slate-300 hover:bg-slate-800 transition-colors"
+                         text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
             >
               ✕
             </button>
@@ -120,7 +124,7 @@ export function CardEditModal({ solicitud, onClose }: CardEditModalProps) {
 
             {/* Tipo */}
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wide">
+              <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide">
                 Tipo
               </label>
               <div className="grid grid-cols-2 gap-2">
@@ -134,7 +138,7 @@ export function CardEditModal({ solicitud, onClose }: CardEditModalProps) {
                         ? t === 'Agotado'
                           ? 'bg-red-600 text-white'
                           : 'bg-blue-600 text-white'
-                        : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
                     }`}
                   >
                     {t === 'Agotado' ? '⚠ Agotado' : '✦ Nuevo'}
@@ -145,7 +149,7 @@ export function CardEditModal({ solicitud, onClose }: CardEditModalProps) {
 
             {/* Nombre del producto */}
             <div>
-              <label htmlFor={`${baseId}-nombre`} className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wide">
+              <label htmlFor={`${baseId}-nombre`} className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide">
                 Producto
               </label>
               <input
@@ -153,16 +157,14 @@ export function CardEditModal({ solicitud, onClose }: CardEditModalProps) {
                 type="text"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3
-                           text-slate-100 text-[16px] focus:outline-none focus:ring-2
-                           focus:ring-blue-500 focus:border-transparent"
+                className={inputClass}
               />
             </div>
 
             {/* Cantidad + Estado en una fila */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label htmlFor={`${baseId}-cant`} className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wide">
+                <label htmlFor={`${baseId}-cant`} className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide">
                   Cantidad
                 </label>
                 <input
@@ -171,13 +173,11 @@ export function CardEditModal({ solicitud, onClose }: CardEditModalProps) {
                   min="1"
                   value={cantidad}
                   onChange={(e) => setCantidad(Math.max(1, Number(e.target.value) || 1))}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3
-                             text-slate-100 text-[16px] text-center font-bold
-                             focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={`${inputClass} text-center font-bold`}
                 />
               </div>
               <div>
-                <label htmlFor={`${baseId}-precio`} className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wide">
+                <label htmlFor={`${baseId}-precio`} className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide">
                   Precio est.
                 </label>
                 <input
@@ -188,24 +188,22 @@ export function CardEditModal({ solicitud, onClose }: CardEditModalProps) {
                   placeholder="0"
                   value={precio}
                   onChange={(e) => setPrecio(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3
-                             text-slate-100 text-[16px]
-                             focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={inputClass}
                 />
               </div>
             </div>
 
             {/* Estado (columna) */}
             <div>
-              <label htmlFor={`${baseId}-estado`} className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wide">
+              <label htmlFor={`${baseId}-estado`} className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide">
                 Columna
               </label>
               <select
                 id={`${baseId}-estado`}
                 value={estado}
                 onChange={(e) => setEstado(e.target.value as EstadoSolicitud)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3
-                           text-slate-100 text-sm focus:outline-none focus:ring-2
+                className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3
+                           text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2
                            focus:ring-blue-500 appearance-none"
               >
                 {ESTADOS.map((e) => (
@@ -216,15 +214,15 @@ export function CardEditModal({ solicitud, onClose }: CardEditModalProps) {
 
             {/* Proveedor */}
             <div>
-              <label htmlFor={`${baseId}-prov`} className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wide">
+              <label htmlFor={`${baseId}-prov`} className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide">
                 Proveedor
               </label>
               <select
                 id={`${baseId}-prov`}
                 value={provId}
                 onChange={(e) => setProvId(e.target.value)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3
-                           text-slate-100 text-sm focus:outline-none focus:ring-2
+                className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3
+                           text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2
                            focus:ring-blue-500 appearance-none"
               >
                 <option value="">Sin proveedor</option>
@@ -238,7 +236,7 @@ export function CardEditModal({ solicitud, onClose }: CardEditModalProps) {
 
             {/* Contacto */}
             <div>
-              <label htmlFor={`${baseId}-contacto`} className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wide">
+              <label htmlFor={`${baseId}-contacto`} className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide">
                 Contacto cliente
               </label>
               <input
@@ -247,15 +245,13 @@ export function CardEditModal({ solicitud, onClose }: CardEditModalProps) {
                 placeholder="Número o nombre"
                 value={contacto}
                 onChange={(e) => setContacto(e.target.value)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3
-                           text-slate-100 text-[16px] focus:outline-none focus:ring-2
-                           focus:ring-blue-500"
+                className={inputClass}
               />
             </div>
 
             {/* Notas */}
             <div>
-              <label htmlFor={`${baseId}-notas`} className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wide">
+              <label htmlFor={`${baseId}-notas`} className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide">
                 Notas
               </label>
               <textarea
@@ -263,15 +259,15 @@ export function CardEditModal({ solicitud, onClose }: CardEditModalProps) {
                 rows={2}
                 value={notas}
                 onChange={(e) => setNotas(e.target.value)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3
-                           text-slate-100 text-[16px] resize-none focus:outline-none
+                className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3
+                           text-slate-900 dark:text-slate-100 text-[16px] resize-none focus:outline-none
                            focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
 
           {/* Footer con acciones */}
-          <div className="px-5 py-4 border-t border-slate-800 flex flex-col gap-2 shrink-0">
+          <div className="px-5 py-4 border-t border-slate-200 dark:border-slate-800 flex flex-col gap-2 shrink-0">
             <button
               onClick={handleSave}
               disabled={saving}
@@ -287,7 +283,7 @@ export function CardEditModal({ solicitud, onClose }: CardEditModalProps) {
               <button
                 onClick={() => setConfirmDel(true)}
                 className="w-full py-3 rounded-xl font-semibold text-sm
-                           text-red-400 hover:bg-red-500/10 transition-colors"
+                           text-red-500 dark:text-red-400 hover:bg-red-500/10 transition-colors"
               >
                 Eliminar solicitud
               </button>
@@ -295,8 +291,8 @@ export function CardEditModal({ solicitud, onClose }: CardEditModalProps) {
               <div className="flex gap-2">
                 <button
                   onClick={() => setConfirmDel(false)}
-                  className="flex-1 py-3 rounded-xl text-sm text-slate-400
-                             hover:bg-slate-800 transition-colors"
+                  className="flex-1 py-3 rounded-xl text-sm text-slate-500 dark:text-slate-400
+                             hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                 >
                   Cancelar
                 </button>

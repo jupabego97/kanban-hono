@@ -167,8 +167,8 @@ export function KanbanBoard() {
     <select
       value={filtroProveedorId ?? ''}
       onChange={(e) => setFiltroProveedor(e.target.value === '' ? null : Number(e.target.value))}
-      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5
-                 text-xs text-slate-300 focus:outline-none focus:ring-1 focus:ring-violet-500
+      className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-2.5 py-1.5
+                 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-violet-500
                  appearance-none"
       title="Filtrar por proveedor"
     >
@@ -185,7 +185,7 @@ export function KanbanBoard() {
 
   return (
     <>
-      <div className="h-[calc(100dvh-57px)] flex flex-col bg-slate-950">
+      <div className="h-[calc(100dvh-57px)] flex flex-col bg-slate-50 dark:bg-slate-950">
 
         {/* Barra superior del kanban con stats */}
         <KanbanStatsBar />
@@ -247,22 +247,22 @@ function KanbanStatsBar() {
   const enCamino = solicitudes.filter((s) => s.estado === 'en_camino').length
 
   return (
-    <div className="flex items-center gap-4 px-4 py-2 border-b border-slate-800 bg-slate-900
-                    text-xs text-slate-500 overflow-x-auto shrink-0">
+    <div className="flex items-center gap-4 px-4 py-2 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900
+                    text-xs text-slate-400 dark:text-slate-500 overflow-x-auto shrink-0">
       <span className="shrink-0">
-        <span className="text-slate-300 font-semibold">{total}</span> solicitudes
+        <span className="text-slate-700 dark:text-slate-300 font-semibold">{total}</span> solicitudes
       </span>
-      <span className="text-slate-700">·</span>
+      <span className="text-slate-300 dark:text-slate-700">·</span>
       <span className="shrink-0">
-        <span className="text-red-400 font-semibold">{agotados}</span> agotados
+        <span className="text-red-500 dark:text-red-400 font-semibold">{agotados}</span> agotados
       </span>
-      <span className="text-slate-700">·</span>
+      <span className="text-slate-300 dark:text-slate-700">·</span>
       <span className="shrink-0">
-        <span className="text-blue-400 font-semibold">{nuevos}</span> nuevos
+        <span className="text-blue-500 dark:text-blue-400 font-semibold">{nuevos}</span> nuevos
       </span>
-      <span className="text-slate-700">·</span>
+      <span className="text-slate-300 dark:text-slate-700">·</span>
       <span className="shrink-0">
-        <span className="text-cyan-400 font-semibold">{enCamino}</span> en camino
+        <span className="text-cyan-500 dark:text-cyan-400 font-semibold">{enCamino}</span> en camino
       </span>
     </div>
   )

@@ -50,13 +50,13 @@ export function KanbanCard({ solicitud: s, onEdit, onDelete, isOverlay }: Kanban
     <div
       ref={setNodeRef}
       style={style}
-      className={`group relative bg-slate-800 border rounded-xl p-3.5 select-none
+      className={`group relative bg-white dark:bg-slate-800 border rounded-xl p-3.5 select-none
                   transition-shadow cursor-grab active:cursor-grabbing
                   ${isDragging
-                    ? 'opacity-30 border-slate-600'
-                    : 'border-slate-700 hover:border-slate-600 hover:shadow-lg hover:shadow-black/30'
+                    ? 'opacity-30 border-slate-300 dark:border-slate-600'
+                    : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-lg hover:shadow-black/10 dark:hover:shadow-black/30'
                   }
-                  ${isOverlay ? 'dnd-overlay border-slate-500' : ''}
+                  ${isOverlay ? 'dnd-overlay border-slate-300 dark:border-slate-500' : ''}
                   card-enter`}
       {...attributes}
       {...listeners}
@@ -74,15 +74,15 @@ export function KanbanCard({ solicitud: s, onEdit, onDelete, isOverlay }: Kanban
         </span>
 
         {/* Cantidad — tipografía grande y prominente */}
-        <span className="text-2xl font-bold text-slate-100 leading-none tabular-nums">
+        <span className="text-2xl font-bold text-slate-900 dark:text-slate-100 leading-none tabular-nums">
           ×{s.cantidadPedida}
         </span>
       </div>
 
       {/* ── Nombre del producto ──────────────────────────── */}
       <p
-        className="text-slate-200 text-sm font-medium leading-snug mb-3 line-clamp-2
-                   cursor-pointer hover:text-white transition-colors"
+        className="text-slate-700 dark:text-slate-200 text-sm font-medium leading-snug mb-3 line-clamp-2
+                   cursor-pointer hover:text-slate-900 dark:hover:text-white transition-colors"
         onClick={(e) => { e.stopPropagation(); onEdit(s) }}
       >
         {s.productoNombre}
@@ -91,10 +91,10 @@ export function KanbanCard({ solicitud: s, onEdit, onDelete, isOverlay }: Kanban
       {/* ── Footer: proveedor + acciones ─────────────────── */}
       <div className="flex items-center justify-between gap-2">
         {/* Proveedor */}
-        <span className="text-xs text-slate-500 truncate">
+        <span className="text-xs text-slate-400 dark:text-slate-500 truncate">
           {s.proveedorNombre ?? 'Sin proveedor'}
           {s.diasEntrega != null && (
-            <span className="ml-1 text-slate-600">· {s.diasEntrega}d</span>
+            <span className="ml-1 text-slate-300 dark:text-slate-600">· {s.diasEntrega}d</span>
           )}
         </span>
 
@@ -125,7 +125,7 @@ export function KanbanCard({ solicitud: s, onEdit, onDelete, isOverlay }: Kanban
             onClick={(e) => { e.stopPropagation(); onEdit(s) }}
             title="Editar"
             className="flex items-center justify-center w-7 h-7 rounded-lg
-                       text-slate-500 hover:text-slate-300 hover:bg-slate-700
+                       text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700
                        transition-colors"
           >
             <PencilIcon />
@@ -136,7 +136,7 @@ export function KanbanCard({ solicitud: s, onEdit, onDelete, isOverlay }: Kanban
             onClick={(e) => { e.stopPropagation(); onDelete(s.id) }}
             title="Eliminar"
             className="flex items-center justify-center w-7 h-7 rounded-lg
-                       text-slate-600 hover:text-red-400 hover:bg-red-500/10
+                       text-slate-400 dark:text-slate-600 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-500/10
                        transition-colors"
           >
             <TrashIcon />
@@ -146,7 +146,7 @@ export function KanbanCard({ solicitud: s, onEdit, onDelete, isOverlay }: Kanban
 
       {/* Nota (si existe) */}
       {s.notas && (
-        <p className="mt-2 text-xs text-slate-500 italic line-clamp-1 border-t border-slate-700/60 pt-2">
+        <p className="mt-2 text-xs text-slate-400 dark:text-slate-500 italic line-clamp-1 border-t border-slate-200 dark:border-slate-700/60 pt-2">
           {s.notas}
         </p>
       )}

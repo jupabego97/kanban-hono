@@ -23,6 +23,7 @@ interface KanbanState {
   error:             string | null
   filtroProveedorId: number | null   // filtro activo en col "por_pedir"
   vista:             'mostrador' | 'kanban'
+  tema:              'oscuro' | 'dia'
 
   // ── Derived ────────────────────────────────────────────────
   /** Solicitudes agrupadas por estado, respetando orden_columna */
@@ -42,6 +43,7 @@ interface KanbanState {
   // ── Actions: UI ────────────────────────────────────────────
   setFiltroProveedor: (id: number | null) => void
   setVista:           (v: 'mostrador' | 'kanban') => void
+  setTema:            (t: 'oscuro' | 'dia') => void
   clearError:         () => void
 
   // ── Actions: SSE ───────────────────────────────────────────
@@ -98,6 +100,7 @@ export const useKanbanStore = create<KanbanState>((set, get) => ({
   error:             null,
   filtroProveedorId: null,
   vista:             'kanban',
+  tema:              (localStorage.getItem('tema') as 'oscuro' | 'dia') ?? 'oscuro',
   byEstado:          buildByEstado([]),
 
   // ── fetchAll ──────────────────────────────────────────────
@@ -244,6 +247,15 @@ export const useKanbanStore = create<KanbanState>((set, get) => ({
   // ── UI helpers ────────────────────────────────────────────
   setFiltroProveedor: (id) => set({ filtroProveedorId: id }),
   setVista: (vista) => set({ vista }),
+  setTema: (tema) => {
+    localStorage.setItem('tema', tema)
+    if (tema === 'oscuro') {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+    set({ tema })
+  },
   clearError: () => set({ error: null }),
 
   // ── Optimistic interno (drag & drop) ─────────────────────

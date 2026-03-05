@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Modo oscuro por clase .dark en <html> */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Tailwind v4: sin tailwind.config.js — toda la config va aquí con @theme */
 @theme {
   --color-slate-950: #020617;
@@ -27,11 +30,16 @@ html {
 }
 
 body {
-  background-color: #0f172a;
-  color: #e2e8f0;
+  background-color: #f8fafc;
+  color: #0f172a;
   font-family: var(--font-sans);
   min-height: 100dvh;
   overflow-x: hidden;
+}
+
+html.dark body {
+  background-color: #0f172a;
+  color: #e2e8f0;
 }
 
 /* Scrollbar personalizada para el kanban horizontal */
